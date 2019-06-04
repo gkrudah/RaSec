@@ -17,7 +17,7 @@ class machine(threading.Thread):
 		# self.lock = lock
 		return
 
-	def checkmachine(self, interval=0.5):
+	def checkmachine(self, interval=0.8):
 
 		if GPIO.input(pirPin):
 			self.jsondata.setState('on')

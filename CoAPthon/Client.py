@@ -3,6 +3,8 @@ import threading
 from collections import OrderedDict
 import json
 
+from handleObserve import Observer
+
 
 class coapClient(threading.Thread):
 	def __init__(self, jsondata):
@@ -22,7 +24,6 @@ class coapClient(threading.Thread):
 		payload["State"] = self.jsondata.getState()
 		payload['CamState'] = self.jsondata.getCamera()
 		payload['BuzzerState'] = self.jsondata.getBuzzer()
-		# payload['Detect'] = self.jsondata.getDetect()
 
 		if post:
 			payload['Mode'] = self.jsondata.getMode()
@@ -57,24 +58,17 @@ class coapClient(threading.Thread):
 		threading.Timer(interval, self.requestGet).start()
 		return
 
-	def requestObserve(self, path):
-		return self.client.observe(path, self.client_callback_observe)
-
-	def handleObserve(self, jsonresponse):
-		if jsonresponse is not None:
-			response = json.loads(jsonresponse)
-			print(response['State'])
-			print(response['Camera'])
-			print(response['Buzzer'])
-		return
+	# def requestObserve(self, path):
+		# return self.client.observe(path, self.client_callback_observe)
 
 	def client_callback_observe(self, response):
-		if response.payload is not None:
-			data = json.loads(response.payload)
-			# self.jsondata.setCamera(data['CamState'])
-			# self.jsondata.setBuzzer(data['BuzzerState'])
-			print("Camstate: ", data['CamState'])
-			print("Buzzerstate: ", data['BuzzerState'])
+		if response.code == 'CONTENT':
+			if response.payload is not None:
+				data = json.loads(response.payload)
+				# self.jsondata.setCamera(data['CamState'])
+				# self.jsondata.setBuzzer(data['BuzzerState'])
+				print("Camstate: ", data['CamState'])
+				print("Buzzerstate: ", data['BuzzerState'])
 		'''
 		check = True
 		while check:
@@ -112,8 +106,10 @@ class coapClient(threading.Thread):
 
 		if self.jsondata.getState() == 'on':
 			# turn on rasec if it is off
+
 			if self.jsondata.getFirst():
 				put_response = self.requestPut(path='report/' + self.deviceid)
+				print("**********************************")
 				self.jsondata.setFirst(False)
 				print(put_response.pretty_print())
 		else:
@@ -126,7 +122,9 @@ class coapClient(threading.Thread):
 	def run(self):
 		self.requestPost()
 
-		observe_response = self.requestObserve(path='obs/' + self.deviceid)
+		observer = Observer(self.jsondata)
+		observer.observe()
+		# observe_response = self.requestObserve(path='obs/' + self.deviceid)
 		# self.handleObserve(observe_response)
 
 		self.checkState()
