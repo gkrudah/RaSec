@@ -45,7 +45,7 @@ public class ControlResource extends CoapResource {
 		try {
 			//2-1. Search DeviceID through Client's URL.
 			//* Fill () in here
-			//마지막 부분 URI 가져오기
+
 			String id = getName();
 			
 			//2-2. Search DeviceID value from Data Structure
@@ -62,13 +62,11 @@ public class ControlResource extends CoapResource {
 			if (device == null) {
 				json.put("Control", "Not Device");
 			} else {
-				if (device.getIsEvent() == true) {
-					json.put("Control", device.getEvent());
-				} else {
-					json.put("Control", "none");
-
+				// json.put("State", device.getState());
+				json.put("CamState", device.getCamera());
+				json.put("BuzzerState", device.getBuzzer());
 				}
-			}
+
 			
 			String payload = json.toString();
 			
@@ -79,6 +77,15 @@ public class ControlResource extends CoapResource {
 		} catch (Exception e) {
 			exchange.respond(ResponseCode.BAD_REQUEST, "Wrong Access");
 		}
+
+		/*
+		if (device.getIsEvent() == true) {
+					json.put("State", device.getState());
+					json.put("CamState", device.getCamera());
+					json.put("BuzzerState", device.getBuzzer());
+				} else {
+					json.put("State", device.getState());
+		 */
 
 	}
 }

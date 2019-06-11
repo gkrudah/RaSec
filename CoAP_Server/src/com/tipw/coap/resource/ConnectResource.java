@@ -46,16 +46,21 @@ public class ConnectResource extends CoapResource {
 			//2-1. JSON Parsing requested value from Device(Client)
 			
 			String id, state, mode;
+			boolean camera, buzzer;
 			JSONObject parsedObject = new JSONObject(exchange.getRequestText().toString());
 			id = parsedObject.getString("DeviceID");
 			state = parsedObject.getString("State");
 			mode = parsedObject.getString("Mode");
+			camera = parsedObject.getBoolean("CamState");
+			buzzer = parsedObject.getBoolean("BuzzerState");
 
 			System.out.println("CONNECT DEVICE");
 			System.out.println("=========");
 			System.out.println("DEVICE ID:" + id);
 			System.out.println("DEVICE State:" + state);
 			System.out.println("DEVICE Mode:" + mode);
+			System.out.println("DEVICE Camera:" + camera);
+			System.out.println("DEVICE Buzzer:" + buzzer);
 			System.out.println("=========");
 			
 			//2-2. Make a Response value with JSONObject
@@ -65,7 +70,6 @@ public class ConnectResource extends CoapResource {
 			
 			//2-3. Response Values to Client
 			// * () Fill in here
-			// Client에게 응답할 값은 전달할것 
 			exchange.respond(ResponseCode.CONTENT, payload, MediaTypeRegistry.APPLICATION_JSON);
 
 			//2-4. Requested value Save into Data Structure

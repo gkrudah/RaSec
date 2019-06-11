@@ -9,6 +9,12 @@ import org.json.JSONObject;
 import com.tipw.global.DeviceInfo;
 import com.tipw.global.Global;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+
 public class ReportResource extends CoapResource {
 	
 	
@@ -24,11 +30,11 @@ public class ReportResource extends CoapResource {
 	public ReportResource(String name) {
 		super(name);
 	}
-	
-	
 
-	
-	
+	public static byte[] decodeImage(String imgstr) {
+		Decoder decoder = Base64.getDecoder();
+		return decoder.decode(imgstr.getBytes(StandardCharsets.UTF_8));
+	}
 	
 	@Override
 	public void handlePUT(CoapExchange exchange) {
@@ -46,33 +52,55 @@ public class ReportResource extends CoapResource {
 				
 				//2-1. Search DeviceID through Client's URL.
 				//* Fill () in here
-				//마지막 부분 URI 가져오기
+
 				String deviceID = getName();
 				//2-2. Search DeviceID value from Data Structure
 				DeviceInfo device = Global.device_list.get(deviceID);
 				//2-3. JSON Parsing requested value "State" from Device(Client)
 				//* Fill () in here
 				JSONObject parse = new JSONObject(exchange.getRequestText().toString());
-				String state = parse.getString("State");
-			
+				String state = "";
+				String imgstr = "";
+				byte[] imgbyte = {};
+				boolean getimg = false;
+
+				if (parse.has("State"))
+					state = parse.getString("State");
+
+				if (parse.has("Image")) {
+					imgstr = parse.getString("Image");
+					imgbyte = decodeImage(imgstr);
+					getimg = true;
+				}
 				
 				//2-4. Make a Response value with JSONObject
-				// If Device is NULL, "failure" Value 값 보내기
-				// else, "success" Value 값 보내기
+
 				//* Fill () in here
 				JSONObject json = new JSONObject();
 				String payload;
 				if (device == null) {
 					json.put("Response", "failure");
 				} else {
-					device.setState(state);
+					if (!"".equals(state))
+						device.setState(state);
+
+					if (getimg) {
+						try {
+							FileOutputStream imgOutput = new FileOutputStream("/received.jpg");
+							imgOutput.write(imgbyte);
+							imgOutput.close();
+						} catch (IOException e) {
+							System.err.println("Exception while reading image!" + e);
+						}
+
+					}
 					json.put("Response", "success");
 				}
 				payload = json.toString();
 				
 				//2-5. Response Values to Client
 				// Fill () in here
-				exchange.respond(ResponseCode.CONTENT, payload, MediaTypeRegistry.APPLICATION_JSON);
+				exchange.respond(ResponseCode.CREATED, payload, MediaTypeRegistry.APPLICATION_JSON);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

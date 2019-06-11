@@ -16,6 +16,8 @@ public class DeviceInfo {
 	String deviceID;
 	String mode; // pull, push
 	String state; // Current Device State on, off
+	boolean camera;
+	boolean buzzer;
 	String event; // When an event is requested
 	boolean isEvent;
 
@@ -55,6 +57,22 @@ public class DeviceInfo {
 		this.state = state;
 	}
 
+	public boolean getCamera() {
+		return camera;
+	}
+
+	public void setCamera(boolean camera) {
+		this.camera = camera;
+	}
+
+	public boolean getBuzzer() {
+		return buzzer;
+	}
+
+	public void setBuzzer(boolean buzzer) {
+		this.buzzer = buzzer;
+	}
+
 	public boolean getIsEvent() {
 		return isEvent;
 	}
@@ -75,6 +93,20 @@ public class DeviceInfo {
 	/*
 	 * 2. Event Control
 	 */
+
+	public boolean setSensorState(int type, boolean state) {
+		if (type == 0)
+			this.setCamera(state);
+		else if (type == 1)
+			this.setBuzzer(state);
+
+		if (this.mode.equals("push")) {
+			if (this.resource == null) { return false; }
+			else { this.resource.changed(); }
+		}
+
+		return true;
+	}
 
 	public boolean ControlEvent(String newState) {
 		this.event = newState;

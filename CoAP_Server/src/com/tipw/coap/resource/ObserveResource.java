@@ -48,9 +48,15 @@ public class ObserveResource extends CoapResource {
 			//fill () in here
 			//From Main, get Device Event
 			String event = device.getEvent();
+			String state = device.getState();
+			boolean camera = device.getCamera();
+			boolean buzzer = device.getBuzzer();
 
 			JSONObject json = new JSONObject();
-			json.put("Control", event);
+			// json.put("State", state);
+			// json.put("Control", event);
+			json.put("CamState", camera);
+			json.put("BuzzerState", buzzer);
 			String payload = json.toString();
 			exchange.respond(ResponseCode.CONTENT, payload, MediaTypeRegistry.APPLICATION_JSON);
 
