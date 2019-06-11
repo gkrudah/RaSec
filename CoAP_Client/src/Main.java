@@ -1,15 +1,16 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+//import java.io.InputStreamReader;
+//import java.util.concurrent.ExecutorService;
+//import java.util.concurrent.Executors;
 
 import org.json.JSONException;
 
 import Global.*;
 import com.pi4j.wiringpi.Gpio;
 import com.mir.Service.*;
+
 public class Main {
 
 	public static void main(String[] args) throws IOException, JSONException {
@@ -21,13 +22,12 @@ public class Main {
 		 */
 		
 		parseCFG();
-		
-		//2. Run CoAP Client Connect URI에서 (Connect Class에서 session()실행) 
+
 		//fill () in here
 		new Connect().session();
 		
 		//3. Setup GPIO
-		Gpio.wiringPiSetup();
+		//Gpio.wiringPiSetup();
 		
 	}
 	

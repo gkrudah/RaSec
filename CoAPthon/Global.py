@@ -2,7 +2,7 @@ class jsonData(object):
 	def __init__(self):
 		self.pollinginterval = 3000
 		self._deviceid = "device1"
-		self._serverip = "127.0.0.1"
+		self._serverip = "192.168.43.6"
 		self._port = 5683
 		self._mode = 'push'
 		self._state = "off"

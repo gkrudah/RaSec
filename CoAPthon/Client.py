@@ -2,8 +2,12 @@ from coapthon.client.helperclient import HelperClient
 import threading
 from collections import OrderedDict
 import json
+from time import sleep
+from PIL import Image
+import io
+import base64
 
-from handleObserve import Observer
+# from handleObserve import Observer
 
 
 class coapClient(threading.Thread):
@@ -93,39 +97,53 @@ class coapClient(threading.Thread):
 		'''
 
 	def checkState(self, interval=1.0):
-		'''
-		self.lock.acquire()
-		try:
-			state = self.jsondata.getState()
-		except Exception:
-			state = 'off'
-			print(Exception)
-		finally:
-			self.lock.release()
-		'''
+		while():
+			if self.jsondata.getState() == 'on':
+				# turn on rasec if it is off
 
-		if self.jsondata.getState() == 'on':
-			# turn on rasec if it is off
+				if self.jsondata.getFirst():
+					put_response = self.requestPut(path='report/' + self.deviceid)
+					self.jsondata.setFirst(False)
+					print(put_response.pretty_print())
+			else:
+				if not self.jsondata.getFirst():
+					self.jsondata.setFirst(True)
 
-			if self.jsondata.getFirst():
-				put_response = self.requestPut(path='report/' + self.deviceid)
-				print("**********************************")
-				self.jsondata.setFirst(False)
-				print(put_response.pretty_print())
-		else:
-			if not self.jsondata.getFirst():
-				self.jsondata.setFirst(True)
+			sleep(interval)
 
-		threading.Timer(interval, self.checkState).start()
+		# threading.Timer(interval, self.checkState).start()
+		return
+
+	def sendImage(self):
+		data = OrderedDict()
+		with open('./ex.jpg', mode='rb') as file:
+			img = file.read()
+			# img = Image.open('./ex.jpg', mode='r')
+			# f = file.read()
+			# img_bytes = bytearray(f)
+		# data['Image'] = base64.encodebytes(img).decode("utf-8")
+		# data['Image'] = base64.b64decode(img)
+		# payload = json.dumps(data, ensure_ascii=False, indent='\t')
+		# img_bytes = io.BytesIO()
+		# img.save(img_bytes, format='PNG')
+		# img_bytes = img_bytes.getvalue()
+		img_bytes = "".join(map(chr, img))
+		# print(img_bytes)
+		# img_bytes.decode("utf-8")
+
+		response = self.client.put(path='report/' + self.deviceid, payload=img_bytes)
+		print(response.pretty_print())
 		return
 
 	def run(self):
 		self.requestPost()
 
-		observer = Observer(self.jsondata)
-		observer.observe()
+		# observer = Observer(self.jsondata)
+		# observer.observe()
 		# observe_response = self.requestObserve(path='obs/' + self.deviceid)
 		# self.handleObserve(observe_response)
+
+		self.sendImage()
 
 		self.checkState()
 		# self.requestGet()

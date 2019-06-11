@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/src/Main.java" charset="x-windows-949" />
-    <file url="file://$PROJECT_DIR$/src/com/mir/GPIO/StateMachine.java" charset="x-windows-949" />
-    <file url="file://$PROJECT_DIR$/src/com/mir/Service/Connect.java" charset="x-windows-949" />
-    <file url="file://$PROJECT_DIR$/src/com/mir/Service/Control.java" charset="x-windows-949" />
-    <file url="file://$PROJECT_DIR$/src/com/mir/Service/Report.java" charset="x-windows-949" />
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

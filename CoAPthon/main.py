@@ -2,10 +2,12 @@
 # import json
 # from collections import OrderedDict
 # import threading
+from time import sleep
 
 import Global
 from Client import coapClient
 from handleRas import machine
+from handleObserve import Observer
 
 jsondata = Global.jsonData()
 host = jsondata.getServerIp()
@@ -19,6 +21,11 @@ def main():
 
 	client = coapClient(jsondata)
 	client.start()
+
+	sleep(1.0)
+
+	observer = Observer(jsondata)
+	observer.start()
 
 	# client.stop()
 	return
