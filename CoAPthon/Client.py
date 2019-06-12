@@ -116,7 +116,7 @@ class coapClient(threading.Thread):
 
 	def sendImage(self):
 		data = OrderedDict()
-		with open('./ex.jpg', mode='rb') as file:
+		with open('./low.jpg', mode='rb') as file:
 			img = file.read()
 			# img = Image.open('./ex.jpg', mode='r')
 			# f = file.read()
@@ -128,10 +128,12 @@ class coapClient(threading.Thread):
 		# img.save(img_bytes, format='PNG')
 		# img_bytes = img_bytes.getvalue()
 		img_bytes = "".join(map(chr, img))
+		data['Image'] = img_bytes
+		payload = json.dumps(data, ensure_ascii=False, indent='\t')
 		# print(img_bytes)
 		# img_bytes.decode("utf-8")
 
-		response = self.client.put(path='report/' + self.deviceid, payload=img_bytes)
+		response = self.client.put(path='report/' + self.deviceid, payload=payload, timeout=5.0)
 		print(response.pretty_print())
 		return
 
@@ -143,7 +145,7 @@ class coapClient(threading.Thread):
 		# observe_response = self.requestObserve(path='obs/' + self.deviceid)
 		# self.handleObserve(observe_response)
 
-		self.sendImage()
+		# self.sendImage()
 
 		self.checkState()
 		# self.requestGet()

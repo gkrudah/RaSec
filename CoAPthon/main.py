@@ -8,6 +8,7 @@ import Global
 from Client import coapClient
 from handleRas import machine
 from handleObserve import Observer
+from handleImage import imageHandler
 
 jsondata = Global.jsonData()
 host = jsondata.getServerIp()
@@ -26,6 +27,11 @@ def main():
 
 	observer = Observer(jsondata)
 	observer.start()
+
+	sleep(1.0)
+
+	imghandler = imageHandler(jsondata)
+	imghandler.start()
 
 	# client.stop()
 	return
