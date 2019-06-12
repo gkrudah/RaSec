@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Device {
     private String deviceId;
+    private String mode;
     private Boolean camState;
     private Boolean buzzerState;
     private String detectState;

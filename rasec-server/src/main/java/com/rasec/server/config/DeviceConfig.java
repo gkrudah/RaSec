@@ -1,8 +1,10 @@
 package com.rasec.server.config;
 
 import com.rasec.server.model.Device;
+import lombok.Data;
 import org.eclipse.californium.core.CoapResource;
 
+@Data
 public class DeviceConfig {
     public static Device device = Device.builder()
             .deviceId("thscowns")
@@ -30,5 +32,9 @@ public class DeviceConfig {
 
     public static CoapResource getObserve_resource() {
         return observe_resource;
+    }
+
+    public static void setObserve_resource(CoapResource observe_resource) {
+        DeviceConfig.observe_resource = observe_resource;
     }
 }
