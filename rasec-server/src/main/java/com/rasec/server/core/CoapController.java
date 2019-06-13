@@ -12,15 +12,15 @@ public class CoapController {
     public CoapController(DeviceManager manager) {
         CoapServer coapServer = new CoapServer();
         coapServer.add(manager);
-        CoapResource control_res = new CoapResource("control");
+        ControlResource control_res = new ControlResource("control");
         DeviceConfig.setControl_resource(control_res);
         coapServer.add(control_res);
 
-        CoapResource report_res = new CoapResource("report");
+        ReportResource report_res = new ReportResource("report");
         DeviceConfig.setReport_resource(report_res);
         coapServer.add(report_res);
 
-        CoapResource observer_res = new CoapResource("obs");
+        ObserveResource observer_res = new ObserveResource("obs");
         DeviceConfig.setObserve_resource(observer_res);
         coapServer.add(observer_res);
 

@@ -15,7 +15,10 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Slf4j
@@ -52,10 +55,22 @@ public class ApiController {
     @GetMapping("RaSec/photos/{photoID}")
     public ResponseEntity<byte[]> getPhoto(@PathVariable String photoID) throws IOException{
         log.info(photoID);
+        String path = "./photos/" + photoID;
+        FileInputStream fileStream = null;
+        /*InputStream in = new FileInputStream(new File(path));
+        //fileStream = new FileInputStream(path);
+        BufferedInputStream bis = new BufferedInputStream(in);
+        byte[] image = new byte[];
+        */
+        byte[] image = Files.readAllBytes(Paths.get(path));
+        // Files.write(Paths.get("photos"), imageByte);
+        // byte[] image = ImageIO.read(new File(path);
+        /*
         BufferedImage bImage = ImageIO.read(new File("./photos/" + photoID));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bImage, "jpg", baos);
         byte[] image = baos.toByteArray();
+         */
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 
@@ -100,14 +115,24 @@ public class ApiController {
         log.info("deviceId:???{}",deviceId);
         return mv;
     }*/
+    /*@RequestMapping(value = "RaSec/photos", method = RequestMethod.PUT)
+    public void addPhoto(HttpServletRequest request){
+        String name = request.getParameter("name");
+        log.info(name);
+        String imageString = request.getParameter("imageByte");
+        log.info(imageString);
+    }*/
 
     @PostMapping("RaSec/device")
     public ModelAndView postDevice(@ModelAttribute Device device) {
         log.info(device.toString());
         ModelAndView mv = new ModelAndView();
         if (DeviceConfig.device.getDeviceId().equals(device.getDeviceId())){
+            log.info("deviceID same??");
             if (device.getBuzzerState() != null){
+                log.info("buzzerState change");
                 DeviceConfig.device.setBuzzerState(device.getBuzzerState());
+                DeviceConfig.observeResourceChanged();
             }
             if (device.getCamState() != null) {
                 DeviceConfig.device.setCamState(device.getCamState());
@@ -121,17 +146,33 @@ public class ApiController {
         return mv;
     }
 
+    //@ModelAttribute
     @PutMapping("RaSec/devices")
-    public ModelAndView putDevice(@ModelAttribute Device device) {
+    public ModelAndView putDevice( Device device) {
         return postDevice(device);
     }
 
     @PutMapping("RaSec/photos")
     public void addPhoto(@RequestBody Photos photo){
+        log.info("RaSec/photos put request");
+        log.info(photo.getName());
+        String imageString = photo.getImageByte();
+        imageString = imageString.substring(2,imageString.length()-1);
+        byte[] imageByte;
         try{
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(photo.getImageByte());
-            BufferedImage bufferedImage = ImageIO.read(inputStream);
-            ImageIO.write(bufferedImage, "jpg", new File("photos/" + photo.getName()));
+            if(photo.getImageByte() == null) {
+                log.info("image null");
+            }
+            log.info(imageString);
+            Base64.Decoder decoder = Base64.getDecoder();
+            imageByte = decoder.decode(imageString);
+
+            // imageByte = decoder.decode(photo.getImageByte());
+            // imageByte = photo.getImageByte().getBytes();
+            // ByteArrayInputStream inputStream = new ByteArrayInputStream(imageByte);
+            // BufferedImage bufferedImage = ImageIO.read(inputStream);
+            Files.write(Paths.get("./photos/"+ photo.getName() + ".jpg"), imageByte);
+            //ImageIO.write(bufferedImage, "jpg", new File("photos/" + photo.getName() + ".jpg"));
         }catch(IOException e){
             e.printStackTrace();
         }

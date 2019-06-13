@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class Photos {
     private String name;
    // private String mimeType;
-    private byte[] imageByte;
+    private String imageByte;
 
 }
