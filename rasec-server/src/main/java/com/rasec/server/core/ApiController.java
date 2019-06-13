@@ -132,7 +132,7 @@ public class ApiController {
             if (device.getBuzzerState() != null){
                 log.info("buzzerState change");
                 DeviceConfig.device.setBuzzerState(device.getBuzzerState());
-                DeviceConfig.observeResourceChanged();
+                DeviceConfig.device.observeResourceChanged();
             }
             if (device.getCamState() != null) {
                 DeviceConfig.device.setCamState(device.getCamState());

@@ -15,15 +15,15 @@ public class DeviceConfig {
             .buzzerState(false)
             .camState(false)
             .build();
-    public static ReportResource report_resource;
-    public static ControlResource control_resource;
-    public static ObserveResource observe_resource;
+    public static CoapResource report_resource;
+    public static CoapResource control_resource;
+    public static CoapResource observe_resource;
 
     public static CoapResource getReport_resource() {
         return report_resource;
     }
 
-    public static  void setReport_resource(ReportResource report_resource) {
+    public static  void setReport_resource(CoapResource report_resource) {
         DeviceConfig.report_resource = report_resource;
     }
 
@@ -31,7 +31,7 @@ public class DeviceConfig {
         return control_resource;
     }
 
-    public static void setControl_resource(ControlResource control_resource) {
+    public static void setControl_resource(CoapResource control_resource) {
         DeviceConfig.control_resource = control_resource;
     }
 
@@ -39,12 +39,8 @@ public class DeviceConfig {
         return observe_resource;
     }
 
-    public static void setObserve_resource(ObserveResource observe_resource) {
+    public static void setObserve_resource(CoapResource observe_resource) {
         DeviceConfig.observe_resource = observe_resource;
     }
-    public static void observeResourceChanged(){
-        log.info("observe_resource changed");
-        DeviceConfig.observe_resource.changed();
-        log.info("after obs changed");
-    }
+
 }
