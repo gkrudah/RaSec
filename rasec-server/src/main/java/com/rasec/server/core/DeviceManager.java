@@ -18,7 +18,7 @@ public class DeviceManager extends CoapResource {
     private ApiController apiController;
     @Autowired
     public DeviceManager() {
-        super("devices");
+        super("connect");
     }
 
     @Override
@@ -57,6 +57,9 @@ public class DeviceManager extends CoapResource {
             DeviceConfig.device = new Device().builder()
                     .deviceId(id)
                     .detectState(state)
+                    .mode(mode)
+                    .camState(camera)
+                    .buzzerState(buzzer)
                     .build();
             // DeviceInfo dev_info = new DeviceInfo(id, state, mode);
             // Global.device_list.put(id, dev_info);

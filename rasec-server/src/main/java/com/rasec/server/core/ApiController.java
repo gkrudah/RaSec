@@ -15,7 +15,10 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Slf4j
@@ -37,22 +40,37 @@ public class ApiController {
     }
 
     @GetMapping("RaSec/devices/**")
-    public Device getDevices() {
-        return DeviceConfig.device;
+    public ModelAndView getDevices() {
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("device", DeviceConfig.device);
+        mv.setViewName("state/device");
+        return mv;
     }
 
-    @GetMapping("RaSec/videos/{movieName}")
-    public ModelAndView getStreaming(@PathVariable String movieName) throws UnsupportedEncodingException{
-        return new ModelAndView("streamView", "movieName", movieName);
+    @GetMapping("RaSec/videos/{videoId}")
+    public ModelAndView getStreaming(@PathVariable String videoId) throws UnsupportedEncodingException{
+        return new ModelAndView("streamView", "movieName", videoId);
     }
 
     @GetMapping("RaSec/photos/{photoID}")
     public ResponseEntity<byte[]> getPhoto(@PathVariable String photoID) throws IOException{
         log.info(photoID);
+        String path = "./photos/" + photoID;
+        FileInputStream fileStream = null;
+        /*InputStream in = new FileInputStream(new File(path));
+        //fileStream = new FileInputStream(path);
+        BufferedInputStream bis = new BufferedInputStream(in);
+        byte[] image = new byte[];
+        */
+        byte[] image = Files.readAllBytes(Paths.get(path));
+        // Files.write(Paths.get("photos"), imageByte);
+        // byte[] image = ImageIO.read(new File(path);
+        /*
         BufferedImage bImage = ImageIO.read(new File("./photos/" + photoID));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bImage, "jpg", baos);
         byte[] image = baos.toByteArray();
+         */
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 
@@ -89,12 +107,32 @@ public class ApiController {
         return mv;
     }
 
-    @PostMapping("RaSec/devices")
-    public Device postDevice(@RequestBody Device device) {
+    /*
+    @RequestMapping(value = "RaSec/device")
+    public ModelAndView stateCamera(HttpServletRequest request){
+        ModelAndView mv = new ModelAndView();
+        String deviceId = request.getParameter("deviceId");
+        log.info("deviceId:???{}",deviceId);
+        return mv;
+    }*/
+    /*@RequestMapping(value = "RaSec/photos", method = RequestMethod.PUT)
+    public void addPhoto(HttpServletRequest request){
+        String name = request.getParameter("name");
+        log.info(name);
+        String imageString = request.getParameter("imageByte");
+        log.info(imageString);
+    }*/
+
+    @PostMapping("RaSec/device")
+    public ModelAndView postDevice(@ModelAttribute Device device) {
         log.info(device.toString());
+        ModelAndView mv = new ModelAndView();
         if (DeviceConfig.device.getDeviceId().equals(device.getDeviceId())){
+            log.info("deviceID same??");
             if (device.getBuzzerState() != null){
+                log.info("buzzerState change");
                 DeviceConfig.device.setBuzzerState(device.getBuzzerState());
+                DeviceConfig.device.observeResourceChanged();
             }
             if (device.getCamState() != null) {
                 DeviceConfig.device.setCamState(device.getCamState());
@@ -103,20 +141,39 @@ public class ApiController {
         else{
             throw new NotFoundException(device.getDeviceId() + " does not exists");
         }
-        return DeviceConfig.device;
+        mv.addObject("device",DeviceConfig.device);
+        mv.setViewName("state/stateChange");
+        return mv;
     }
 
-    @PutMapping("RaSec/devices")
-    public Device putDevice(@RequestBody Device device) {
+    //@ModelAttribute
+    @PutMapping("RaSec/device")
+    public ModelAndView putDevice( Device device) {
         return postDevice(device);
     }
 
     @PutMapping("RaSec/photos")
     public void addPhoto(@RequestBody Photos photo){
+        log.info("RaSec/photos put request");
+        log.info(photo.getName());
+        String imageString = photo.getImageByte();
+        log.info(imageString);
+        imageString = imageString.substring(2,imageString.length()-1);
+        byte[] imageByte;
         try{
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(photo.getImageByte());
-            BufferedImage bufferedImage = ImageIO.read(inputStream);
-            ImageIO.write(bufferedImage, "jpg", new File("photos/" + photo.getName()));
+            if(photo.getImageByte() == null) {
+                log.info("image null");
+            }
+            // log.info(imageString);
+            Base64.Decoder decoder = Base64.getDecoder();
+            imageByte = decoder.decode(imageString);
+
+            // imageByte = decoder.decode(photo.getImageByte());
+            // imageByte = photo.getImageByte().getBytes();
+            // ByteArrayInputStream inputStream = new ByteArrayInputStream(imageByte);
+            // BufferedImage bufferedImage = ImageIO.read(inputStream);
+            Files.write(Paths.get("./photos/"+ photo.getName() + ".jpg"), imageByte);
+            //ImageIO.write(bufferedImage, "jpg", new File("photos/" + photo.getName() + ".jpg"));
         }catch(IOException e){
             e.printStackTrace();
         }

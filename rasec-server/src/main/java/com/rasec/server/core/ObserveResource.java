@@ -2,6 +2,7 @@ package com.rasec.server.core;
 
 import com.rasec.server.config.DeviceConfig;
 import com.rasec.server.model.Device;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
@@ -9,7 +10,7 @@ import org.eclipse.californium.core.coap.CoAP.Type;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.json.JSONObject;
 
-
+@Slf4j
 public class ObserveResource extends CoapResource {
 
     /*
@@ -59,11 +60,13 @@ public class ObserveResource extends CoapResource {
             json.put("CamState", camera);
             json.put("BuzzerState", buzzer);
             String payload = json.toString();
+            log.info("observe resource " + payload);
             exchange.respond(ResponseCode.CONTENT, payload, MediaTypeRegistry.APPLICATION_JSON);
 
         } catch (Exception e) {
             // TODO: handle exception
         }
     }
+
 
 }
