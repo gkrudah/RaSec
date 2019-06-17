@@ -1,15 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
 
-ModelAndView 테스트 페이지입니다.
-
+RaSec page 입니다!
 <br>
-
-${ObjectTest}
-
+라즈베리파이에서 전송되는 사진, 영상을 볼 수 있고,
 <br>
+상태 변경을 통해서 라즈베리파이의 동작을 제어할 수 있습니다.
 
-${listTest}
 <br>
 <body>
     <a href="/RaSec/photos">사진보기</a>

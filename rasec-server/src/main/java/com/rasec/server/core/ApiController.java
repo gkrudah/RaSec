@@ -147,7 +147,7 @@ public class ApiController {
     }
 
     //@ModelAttribute
-    @PutMapping("RaSec/devices")
+    @PutMapping("RaSec/device")
     public ModelAndView putDevice( Device device) {
         return postDevice(device);
     }
@@ -157,13 +157,14 @@ public class ApiController {
         log.info("RaSec/photos put request");
         log.info(photo.getName());
         String imageString = photo.getImageByte();
+        log.info(imageString);
         imageString = imageString.substring(2,imageString.length()-1);
         byte[] imageByte;
         try{
             if(photo.getImageByte() == null) {
                 log.info("image null");
             }
-            log.info(imageString);
+            // log.info(imageString);
             Base64.Decoder decoder = Base64.getDecoder();
             imageByte = decoder.decode(imageString);
 
